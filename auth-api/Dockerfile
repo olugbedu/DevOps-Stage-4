@@ -13,16 +13,10 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o auth-api .
 
 # Final stage
-FROM alpine:3.16
+FROM alpine:latest
 WORKDIR /app
+RUN apk --no-cache add ca-certificates
 COPY --from=build-stage /app/auth-api .
-# Copy config if it exists
-RUN mkdir -p config
-COPY --from=build-stage /app/config ./config/ || true
 
-# Run as non-root user
-RUN adduser -D appuser
-USER appuser
-
-EXPOSE 8000
+EXPOSE 8081
 CMD ["./auth-api"]
