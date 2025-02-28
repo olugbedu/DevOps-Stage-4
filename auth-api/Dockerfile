@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.19-alpine AS build-stage
+FROM golang:1.21-alpine AS build-stage
 WORKDIR /app
 
 # Copy go mod and sum files
