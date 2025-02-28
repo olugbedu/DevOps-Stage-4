@@ -9,7 +9,8 @@ RUN npm run build
 # Production stage
 FROM nginx:stable-alpine as production-stage
 COPY --from=build-stage /app/dist /usr/share/nginx/html
+
 # Create a default nginx config if one doesn't exist in the repo
 RUN [ -f /app/nginx.conf ] && cp /app/nginx.conf /etc/nginx/conf.d/default.conf || echo 'server { listen 80; location / { root /usr/share/nginx/html; index index.html; try_files $uri $uri/ /index.html; } }' > /etc/nginx/conf.d/default.conf
-EXPOSE 80
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

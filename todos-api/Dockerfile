@@ -12,5 +12,5 @@ RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001 -G nodejs
 USER nodejs
 
-EXPOSE 3000
+EXPOSE 8082
 CMD ["node", "server.js"]
