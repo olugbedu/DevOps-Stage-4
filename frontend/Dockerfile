@@ -1,16 +1,21 @@
-# Build stage
-FROM node:16-alpine as build-stage
+FROM node:12 AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+
 RUN npm run build
 
-# Production stage
-FROM nginx:stable-alpine as production-stage
-COPY --from=build-stage /app/dist /usr/share/nginx/html
+ARG PORT
+ARG AUTH_API_ADDRESS
+ARG TODOS_API_ADDRESS
 
-# Create a default nginx config if one doesn't exist in the repo
-RUN [ -f /app/nginx.conf ] && cp /app/nginx.conf /etc/nginx/conf.d/default.conf || echo 'server { listen 80; location / { root /usr/share/nginx/html; index index.html; try_files $uri $uri/ /index.html; } }' > /etc/nginx/conf.d/default.conf
+ENV PORT=${PORT} \
+    AUTH_API_ADDRESS=${AUTH_API_ADDRESS} \
+    TODOS_API_ADDRESS=${TODOS_API_ADDRESS}
+
+
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
 EXPOSE 8080
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-g", "daemon off;"] 
